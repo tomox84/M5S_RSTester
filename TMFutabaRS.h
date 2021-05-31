@@ -1,6 +1,7 @@
 /*---------------------------------------
   TMFutabaRS クラス
   ver. 1.0 2021-05-19
+  ver. 1.0.1 2021-05-31
 
   Futabaのサーボモータ　コマンド制御クラス
   動作確認 Futaba サーボ
@@ -13,6 +14,16 @@
   M5StickC
   M5StickCPlus
   M5Atom
+
+  変更内容
+  v1.0.1
+    Version(バージョン番号文字列)を設定
+    Id(設定されているIDの取得)の関数新設
+    ChangeID(IDの書き換え)をRewriteIDに名称変更
+    ChangeID(IDの変更)の関数新設
+    
+    
+  
   ---------------------------------------*/
 #pragma once
 
@@ -46,9 +57,6 @@ class TMFutabaRS {
     // タイムアウトのループカウント
     const int _cntMax = _rxTimeout / _loopWaitMs;
 
-    // データのシリアルへの出力
-    void printData(String title, unsigned char* txData, size_t sizeData);
-
     // データの送信
     void SendBin(unsigned char* txData, size_t sizeData);
 
@@ -77,6 +85,7 @@ class TMFutabaRS {
     void reboot(void);
 
   public:
+    const String Version = "1.0.1";
     // Memory Map 00-29(詳細はRS304のマニュアルを参照のこと)
     short int ModelNumber = 0;
     String ModelString(void);
@@ -124,6 +133,12 @@ class TMFutabaRS {
     // コンストラクタ
     TMFutabaRS(unsigned char Id);
 
+    // IDの取得
+    unsigned char Id(void);
+
+    // IDの変更
+    void ChangeId(unsigned char newId);
+
     // 開始
     void begin(HardwareSerial* SerialServo);
 
@@ -152,7 +167,7 @@ class TMFutabaRS {
     void ResetFactoryDefault(HardwareSerial* SerialOut);
 
     // IDの書き換え
-    void ChangeID(unsigned char newID, HardwareSerial* SerialOut);
+    void RewriteID(unsigned char newID, HardwareSerial* SerialOut);
 
     // トルク
     void TorqueOn(void);

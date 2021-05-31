@@ -23,6 +23,7 @@ void setup() {
   M5.Lcd.setRotation(1);
   M5.Lcd.setTextFont(1);
   M5.Lcd.setTextSize(2);
+  M5.Lcd.fillScreen(BLUE);
 
     // 下部文字の表示
   M5.Lcd.fillRect(0, 224, 320, 16, WHITE);
@@ -31,9 +32,9 @@ void setup() {
   M5.Lcd.print("-- Press Any Buttom --");
 
     // トルクオン
-  servo1.TorqueOn();
+  servo.TorqueOn();
   // 0度へ移動
-  servo1.Move(0, 10);
+  servo.Move(0, 10);
 }
 
 void loop() {

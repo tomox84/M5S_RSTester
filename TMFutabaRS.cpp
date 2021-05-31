@@ -17,6 +17,27 @@ TMFutabaRS::TMFutabaRS(unsigned char Id) {
 }
 
 /*-------------------------------------------------
+  名前: Id
+  機能: コンストラクタ
+  引数: なし
+  戻値: 設定されているID
+  -------------------------------------------------*/
+unsigned char TMFutabaRS::Id(void) {
+  return _Id;
+}
+
+/*-------------------------------------------------
+  名前: ChangeId
+  機能: IDの変更
+  引数
+    newId: 新しいID
+  戻値: なし
+  -------------------------------------------------*/
+void TMFutabaRS::ChangeId(unsigned char newId) {
+  _Id = newId;
+}
+
+/*-------------------------------------------------
   名前: begin
   機能: 使用開始
   引数
@@ -899,13 +920,13 @@ void TMFutabaRS::ResetFactoryDefault(HardwareSerial* SerialOut) {
 }
 
 /*-------------------------------------------------
-  名前: サーボのIDの変更
-  機能: ChangeID
+  名前: サーボのIDの書き換え
+  機能: RewrteID
   引数
      SerialOut: 表示用Serial
   戻値: なし
   -------------------------------------------------*/
-void TMFutabaRS::ChangeID(unsigned char newID, HardwareSerial* SerialOut) {
+void TMFutabaRS::RewriteID(unsigned char newId, HardwareSerial* SerialOut) {
   // 送信データ
   const size_t sizeData = 9;
   unsigned char txData[sizeData];
@@ -918,7 +939,7 @@ void TMFutabaRS::ChangeID(unsigned char newID, HardwareSerial* SerialOut) {
   txData[4] = 0x04;           // Address
   txData[5] = 0x01;           // Length
   txData[6] = 0x01;           // Count
-  txData[7] = newID;          // New ID
+  txData[7] = newId;          // New ID
 
   // チェックサム計算
   txData[sizeData - 1] = 0;
@@ -926,15 +947,12 @@ void TMFutabaRS::ChangeID(unsigned char newID, HardwareSerial* SerialOut) {
     txData[sizeData - 1] ^= txData[i]; // ID～DATAまでのXOR
   }
 
-  // データ表示
-  printData("-- Change ID ------------", txData, sizeData);
-
   // データ送信
   SendBin(txData, sizeData);
   delay(1000);
 
   // ID変更
-  _Id = newID;
+  ChangeId(newId);
 
   // FlashROMへの書き込み
   writeFlashRom();
@@ -944,7 +962,7 @@ void TMFutabaRS::ChangeID(unsigned char newID, HardwareSerial* SerialOut) {
   reboot();
 
   SerialOut->println("*****************************");
-  SerialOut->printf(" Changed ID (%d) !!\n", newID);
+  SerialOut->printf(" Rewrite ID (%d) !!\n", newId);
   SerialOut->println(" Please reload program");
   SerialOut->println("*****************************");
 
