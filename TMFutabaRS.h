@@ -18,9 +18,10 @@
   変更内容
   v1.0.1
     Version(バージョン番号文字列)を設定
-    Id(設定されているIDの取得)の関数新設
+    Id(設定されているIDの取得)の関数追加
     ChangeID(IDの書き換え)をRewriteIDに名称変更
-    ChangeID(IDの変更)の関数新設
+    ChangeID(IDの変更)の関数追加
+    WaitGoal(サーボの移動を待つ)の関数追加
     
     
   
@@ -85,7 +86,9 @@ class TMFutabaRS {
     void reboot(void);
 
   public:
+    // バージョン
     const String Version = "1.0.1";
+    
     // Memory Map 00-29(詳細はRS304のマニュアルを参照のこと)
     short int ModelNumber = 0;
     String ModelString(void);
@@ -182,4 +185,7 @@ class TMFutabaRS {
 
     // サーボ移動時間
     void MoveTime(int Tms);
+
+    // サーボのゴール(移動角度に移動したか)を待つ
+    boolean WaitGoal(short int margin);
 };

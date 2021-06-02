@@ -2,7 +2,7 @@
 // ---------------------------------------
 // TMFutabaRS クラス
 // ver. 1.0 2021-05-19
-// 
+//
 // Futabaのサーボモータ　コマンド制御クラス
 // ---------------------------------------
 
@@ -108,7 +108,7 @@ boolean TMFutabaRS::rxReadByte(unsigned char* readData) {
   -------------------------------------------------*/
 boolean TMFutabaRS::rxCompare(unsigned char compData) {
   unsigned char readData;
-  if(rxReadByte(&readData)==false) return false;
+  if (rxReadByte(&readData) == false) return false;
 
   return readData == compData;
 }
@@ -142,7 +142,7 @@ boolean TMFutabaRS::rxRead(unsigned char* readData, size_t sizeData) {
     sizeData: 読み込むデータ数
     countMax: リトライする最大カウント
     waitMs: リトライのループのウェイト
-    
+
   戻値
     true: 成功
     false: タイムアウト
@@ -229,7 +229,7 @@ boolean TMFutabaRS::MemoryMap00to29(void) {
   _BaudRate = readData[13];
 
   // Return Delay
-  ReturnDelayMicroSec = 100 + 50*(int)readData[14];
+  ReturnDelayMicroSec = 100 + 50 * (int)readData[14];
 
   // Limit Angle
   LimitAngleR = (short int)(readData[16] << 8);   // Hi byte
@@ -306,14 +306,14 @@ boolean TMFutabaRS::MemoryMap30to59(void) {
   // 指示位置
   GoalPosition = (short int)(readData[8] << 8);   // Hi byte
   GoalPosition |= (short int)readData[7];         // Lo byte
-  
+
   // 指示時間
   GoalTime = (short int)(readData[10] << 8);   // Hi byte
   GoalTime |= (short int)readData[9];         // Lo byte
 
   // 最大トルク
   MaxTorque = readData[12];
-  
+
   // トルクモード
   TorqueMode = readData[13];
 
@@ -324,7 +324,7 @@ boolean TMFutabaRS::MemoryMap30to59(void) {
   // 現在時間
   CurrentTime = (short int)(readData[22] << 8);   // Hi byte
   CurrentTime |= (short int)readData[21];         // Lo byte
-  
+
   // 現在スピード
   CurrentSpeed = (short int)(readData[24] << 8);   // Hi byte
   CurrentSpeed |= (short int)readData[23];         // Lo byte
@@ -398,7 +398,7 @@ boolean TMFutabaRS::MemoryMap42to59(int countMax, int waitMs) {
   PrevTime = CurrentTime;
   CurrentTime = (short int)(readData[10] << 8);   // Hi byte
   CurrentTime |= (short int)readData[9];         // Lo byte
-  
+
   // 現在スピード
   PrevSpeed = CurrentSpeed;
   CurrentSpeed = (short int)(readData[12] << 8);   // Hi byte
@@ -969,4 +969,28 @@ void TMFutabaRS::RewriteID(unsigned char newId, HardwareSerial* SerialOut) {
   while (-1) {
     delay(1000);
   }
+}
+
+
+/*-------------------------------------------------
+  名前: サーボのゴール(移動角度に移動したか)を待つ
+  機能: WaitGoal
+  引数
+    margin: 誤差の範囲(この数値以内ならばゴールに到達)
+  戻値:
+    true: ゴールに到達した
+    false: ゴール到達前に終了
+  -------------------------------------------------*/
+boolean TMFutabaRS::WaitGoal(short int margin) {
+  // 初期設定ではコンプライアンスマージンは0.2度(p32)
+  int cnt = 0;;
+  do {
+    // メモリマップ読み出し
+    if (MemoryMap30to59() == false) return false;
+    // 現在のPosionとゴールの差の絶対値が 0.5度以内であればゴールに到達
+    if (abs(GoalPosition - CurrentPosition) <= margin) return true;
+    delay(50);
+    cnt++;
+    if (cnt > 100) return false;
+  } while (true);
 }
