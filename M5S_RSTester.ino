@@ -36,6 +36,7 @@ void setup() {
   ResetPos();
 }
 
+// -- setup --
 void loop() {
   // サーボ操作モード
   if (OpeMode == 1) {
